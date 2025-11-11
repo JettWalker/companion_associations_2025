@@ -57,7 +57,7 @@ cand_count <- predictors
 max_k_zero     <- 9
 max_k_count    <- 9
 keep_intercept <- TRUE
-rank_by        <- "AICc"           # or "BIC"
+rank_by        <- "AICc"
 
 # FAST pre-screen with pscl::hurdle
 FAST_MODE            <- TRUE
@@ -84,7 +84,7 @@ RUN_VARIANT_DVMPA        <- TRUE          # add DVMPA to both parts
 RUN_VARIANT_DVHP_DVPP    <- TRUE          # include DVHP + DVPP
 CV_ON_DVHP_DVPP          <- TRUE          # do 10-fold CV + calibration for DVHP+DVPP
 
-# If you want to lock the figures to known “final” terms,
+# lock the figures to known “final” terms,
 # set them here (used by ROC/partials/forest when baseline runs):
 final_count_vars <- c("windU","logSalinity","logCHl","logDFS")
 final_zero_vars  <- c("windU","Oxy","logSalinity","logCHl","logDFS","logDTP")
@@ -274,7 +274,7 @@ if (RUN_VARIANT_DVHP_DVPP && all(c("DVHP","DVPP") %in% names(raw))) {
     ) %>%
     drop_na()
 
-  # Base fit (your earlier structure)
+  # Base fit (earlier structure)
   count_vars_b <- c("windU","logSalinity","logPP","DVHP","DVPP")
   zero_vars_b  <- c("windU","SST","logSalinity","logPP","logDFS","DVPP")
   fm_b <- as.formula(paste("Comp_Abund ~", paste(count_vars_b, collapse = " + "),
@@ -294,7 +294,7 @@ if (RUN_VARIANT_DVHP_DVPP && all(c("DVHP","DVPP") %in% names(raw))) {
   print_stats_list(stats_b)
   capture.output(summary(mod_b), file = file.path(OUT_DIR, "variant_DVHP_DVPP_summary.txt"))
   
-  # Optional: glmmTMB CV on a slightly expanded zero set (as you did later)
+  # Optional: glmmTMB CV on a slightly expanded zero set
   if (CV_ON_DVHP_DVPP) {
     count_cv <- c("windU","logSalinity","logPP","logDFS","DVHP","DVPP")
     zero_cv  <- c("windU","SST","logSalinity","logPP","logDFS","DVHP","DVPP")
@@ -646,8 +646,8 @@ binary_bar <- function(var, m, dat, part=c("count","zero"), labels=c("outside","
           axis.text=element_text(colour="black"))
 }
 
-# ---------- ORCHESTRATORS + EXAMPLE ----------
-# pretty labels (change to match manuscript)
+# ---------- ORCHESTRATORS ----------
+# labels
 lab_count <- c(windU="Wind (U component)", logSalinity="Salinity (log)",
                logPP="Primary production (log)")
 lab_zero  <- c(windU="Wind U", SST="Sea surface temperature (°C)",
@@ -673,7 +673,7 @@ p_DVHP <- binary_bar("DVHP", m = mod, dat = dat, part = "count",
 p_DVPP <- binary_bar("DVPP", m = mod, dat = dat, part = "zero",
                      labels = c("0","1"), xlab = "DVPP", ylab = "Pr(Count = 0)")
 
-# stitch to match your layouts
+# stitch to match layouts
 p_count <- plot_grid(count_plots$windU, count_plots$logSalinity, count_plots$logPP,
                      nrow = 1, labels = c("a)","b)","c)")) +
   theme(plot.margin = margin(5,5,5,5))
